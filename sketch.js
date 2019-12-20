@@ -1,9 +1,13 @@
-var ball;
+var hypnoticBall;
+var database,position;
 
 function setup(){
+    database = firebase.database();
     createCanvas(500,500);
-    ball = createSprite(250,250,10,10);
-    ball.shapeColor = "red";
+    hypnoticBall = createSprite(250,250,10,10);
+    hypnoticBall.shapeColor = "red";
+    var hypnoticBallPosition = database.ref('ball/position');
+    hypnoticBallPosition.on("value",readPosition,showError);
 }
 
 function draw(){
@@ -24,6 +28,17 @@ function draw(){
 }
 
 function changePosition(x,y){
-    ball.x = ball.x + x;
-    ball.y = ball.y + y;
+    database.ref('ball/position').set({
+        'x':position.x+x,
+        'y':position.y+y,
+    })
+}
+
+function readPosition(data){
+    position = data.val();
+    hypnoticBall.x = position.x;
+    hypnoticBall.y = position.y;
+}
+function showError(){
+    console.log("error in writing to the database");
 }
